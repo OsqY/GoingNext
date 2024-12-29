@@ -10,13 +10,15 @@ type Config struct {
 		Password string
 		DBName   string
 	}
+	Auth struct {
+		SecretKey string
+	}
 }
 
 func LoadConfig() (*Config, error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-	viper.AddConfigPath("./internal/config")
+	viper.AddConfigPath("../../internal/config")
 
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, err

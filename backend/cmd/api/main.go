@@ -6,10 +6,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/OsqY/GoingNext/backend/internal/config"
-	"github.com/OsqY/GoingNext/backend/internal/db"
-	"github.com/OsqY/GoingNext/backend/internal/http_internal"
-	"github.com/OsqY/GoingNext/backend/internal/http_internal/handlers"
+	"github.com/OsqY/GoingNext/internal/config"
+	"github.com/OsqY/GoingNext/internal/db"
+	"github.com/OsqY/GoingNext/internal/http_internal"
+	"github.com/OsqY/GoingNext/internal/http_internal/handlers"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -28,8 +28,10 @@ func main() {
 	queries := db.New(conn)
 
 	userHandler := handlers.NewUserHandler(queries)
+	authHandler := handlers.NewAuthHandler(queries)
 
-	router := http_internal.NewRouter(userHandler)
+	router := http_internal.NewRouter(userHandler, authHandler)
 
 	log.Fatal(http.ListenAndServe(":8000", router))
+	fmt.Println("We on mf!")
 }
