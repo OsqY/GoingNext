@@ -50,10 +50,11 @@ INSERT INTO users (
     username,
     password,
     role_id,
+    image_url,
     created_by
 ) VALUES (
-    $1, $2, $3, $4, $5
-) RETURNING id, email, username, password, role_id, is_active, created_at, updated_at, deleted_at, created_by, updated_by, deleted_by
+    $1, $2, $3, $4, $5, $6
+) RETURNING id, email, username, password, role_id, is_active, image_url, created_at, updated_at, deleted_at, created_by, updated_by, deleted_by
 `
 
 type CreateUserParams struct {
@@ -61,6 +62,7 @@ type CreateUserParams struct {
 	Username  string
 	Password  string
 	RoleID    int32
+	ImageUrl  pgtype.Text
 	CreatedBy pgtype.Int4
 }
 
@@ -70,6 +72,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Username,
 		arg.Password,
 		arg.RoleID,
+		arg.ImageUrl,
 		arg.CreatedBy,
 	)
 	var i User
@@ -80,6 +83,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Password,
 		&i.RoleID,
 		&i.IsActive,
+		&i.ImageUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -113,7 +117,7 @@ func (q *Queries) GetRole(ctx context.Context, id int32) (Role, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT u.id, u.email, u.username, u.password, u.role_id, u.is_active, u.created_at, u.updated_at, u.deleted_at, u.created_by, u.updated_by, u.deleted_by, r.name as role_name 
+SELECT u.id, u.email, u.username, u.password, u.role_id, u.is_active, u.image_url, u.created_at, u.updated_at, u.deleted_at, u.created_by, u.updated_by, u.deleted_by, r.name as role_name 
 FROM users u
 JOIN roles r ON u.role_id = r.id
 WHERE u.email = $1 AND u.deleted_at IS NULL
@@ -126,6 +130,7 @@ type GetUserByEmailRow struct {
 	Password  string
 	RoleID    int32
 	IsActive  pgtype.Bool
+	ImageUrl  pgtype.Text
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 	DeletedAt pgtype.Timestamptz
@@ -145,6 +150,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEm
 		&i.Password,
 		&i.RoleID,
 		&i.IsActive,
+		&i.ImageUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -157,7 +163,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEm
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT u.id, u.email, u.username, u.password, u.role_id, u.is_active, u.created_at, u.updated_at, u.deleted_at, u.created_by, u.updated_by, u.deleted_by, r.name as role_name 
+SELECT u.id, u.email, u.username, u.password, u.role_id, u.is_active, u.image_url, u.created_at, u.updated_at, u.deleted_at, u.created_by, u.updated_by, u.deleted_by, r.name as role_name 
 FROM users u
 JOIN roles r ON u.role_id = r.id
 WHERE u.id = $1 AND u.deleted_at IS NULL
@@ -170,6 +176,7 @@ type GetUserByIDRow struct {
 	Password  string
 	RoleID    int32
 	IsActive  pgtype.Bool
+	ImageUrl  pgtype.Text
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 	DeletedAt pgtype.Timestamptz
@@ -189,6 +196,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (GetUserByIDRow, er
 		&i.Password,
 		&i.RoleID,
 		&i.IsActive,
+		&i.ImageUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -237,7 +245,7 @@ func (q *Queries) ListRoles(ctx context.Context) ([]Role, error) {
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT u.id, u.email, u.username, u.password, u.role_id, u.is_active, u.created_at, u.updated_at, u.deleted_at, u.created_by, u.updated_by, u.deleted_by, r.name as role_name 
+SELECT u.id, u.email, u.username, u.password, u.role_id, u.is_active, u.image_url, u.created_at, u.updated_at, u.deleted_at, u.created_by, u.updated_by, u.deleted_by, r.name as role_name 
 FROM users u
 JOIN roles r ON u.role_id = r.id
 WHERE u.deleted_at IS NULL
@@ -257,6 +265,7 @@ type ListUsersRow struct {
 	Password  string
 	RoleID    int32
 	IsActive  pgtype.Bool
+	ImageUrl  pgtype.Text
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 	DeletedAt pgtype.Timestamptz
@@ -282,6 +291,7 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]ListUse
 			&i.Password,
 			&i.RoleID,
 			&i.IsActive,
+			&i.ImageUrl,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
@@ -324,10 +334,12 @@ SET
     email = COALESCE($3, email),
     username = COALESCE($4, username),
     role_id = COALESCE($5, role_id),
+    password = COALESCE($6, password),
+    image_url = COALESCE($7, image_url),
     updated_at = CURRENT_TIMESTAMP,
     updated_by = $2
 WHERE id = $1 AND deleted_at IS NULL
-RETURNING id, email, username, password, role_id, is_active, created_at, updated_at, deleted_at, created_by, updated_by, deleted_by
+RETURNING id, email, username, password, role_id, is_active, image_url, created_at, updated_at, deleted_at, created_by, updated_by, deleted_by
 `
 
 type UpdateUserParams struct {
@@ -336,6 +348,8 @@ type UpdateUserParams struct {
 	Email     pgtype.Text
 	Username  pgtype.Text
 	RoleID    pgtype.Int4
+	Password  pgtype.Text
+	ImageUrl  pgtype.Text
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -345,6 +359,8 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Email,
 		arg.Username,
 		arg.RoleID,
+		arg.Password,
+		arg.ImageUrl,
 	)
 	var i User
 	err := row.Scan(
@@ -354,6 +370,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Password,
 		&i.RoleID,
 		&i.IsActive,
+		&i.ImageUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,

@@ -27,6 +27,7 @@ type User struct {
 	Password  string
 	RoleID    int32
 	IsActive  pgtype.Bool
+	ImageUrl  pgtype.Text
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 	DeletedAt pgtype.Timestamptz

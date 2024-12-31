@@ -56,21 +56,21 @@ func VerifyToken(tokenString string) (jwt.MapClaims, error) {
 	return nil, err
 }
 
-func GetUserIdFromToken(tokenString string) (int, error) {
-	token, err := jwt.Parse(tokenString, func(tkoen *jwt.Token) (interface{}, error) {
+func GetUserEmailFromToken(tokenString string) (string, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return tokenString, nil
 	})
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if !ok && !token.Valid {
-		return 0, fmt.Errorf("invalid token")
+		return "", fmt.Errorf("invalid token")
 	}
 
-	return claims["userId"].(int), nil
+	return claims["email"].(string), nil
 }
 
 func (a *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
@@ -99,4 +99,23 @@ func (a *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, "invalid credentials")
 	}
+}
+
+func (a *AuthHandler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value("user").(jwt.MapClaims)
+	if !ok {
+		http.Error(w, "invalid token claims", http.StatusUnauthorized)
+		return
+	}
+
+	email := claims["email"].(string)
+
+	user, err := a.queries.GetUserByEmail(r.Context(), email)
+	if err != nil {
+		http.Error(w, "user with that email doesn't exist", http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }

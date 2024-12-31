@@ -54,7 +54,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := h.queries.CreateUser(r.Context(), db.CreateUserParams{
-		Username: req.Username, Email: req.Email, Password: req.Password, RoleID: int32(req.RoleID),
+		Username: req.Username, Email: req.Email, Password: req.Password, RoleID: int32(req.RoleID), ImageUrl: pgtype.Text{*req.ImageURL, true},
 	})
 	if err != nil {
 		http.Error(w, "there was an error saving your info: "+err.Error(), http.StatusInternalServerError)
@@ -64,9 +64,35 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-// func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-//
-// }
+func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	var req dto.UpdateUserRequest
+
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, "invalid id format", http.StatusBadRequest)
+		return
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	validator := validator.New()
+
+	if err := validator.Struct(req); err != nil {
+		http.Error(w, "error validating your request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	_, err = h.queries.UpdateUser(r.Context(), db.UpdateUserParams{
+		ID: int32(id), Username: pgtype.Text{*req.Username, true}, Email: pgtype.Text{*req.Email, true}, Password: pgtype.Text{req.Password, true}, ImageUrl: pgtype.Text{*req.ImageURL, true},
+	})
+	if err != nil {
+		http.Error(w, "there was an error saving your info: "+err.Error(), http.StatusInternalServerError)
+	}
+	w.WriteHeader(http.StatusOK)
+}
 
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))

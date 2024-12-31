@@ -47,11 +47,6 @@ Thumbs.db
 *.log
 logs/
 
-# Database files
-*.db
-*.sql
-!migrations/*.sql
-
 # Config files with sensitive information
 config.yaml
 config.yml
