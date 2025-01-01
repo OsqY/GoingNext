@@ -1,25 +1,49 @@
-
-"use client"
+"use client";
 
 import { ChevronRight, LucideIcon } from "lucide-react";
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton } from "../ui/sidebar";
+import {
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+} from "../ui/sidebar";
 import { Collapsible } from "../ui/collapsible";
-import { CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
+import {
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@radix-ui/react-collapsible";
 
-export function NavMain({ items }: { items: { title: string, url: string, icon?: LucideIcon, isActive?: boolean, items: { title: string, url: string }[] }[] }) {
+export function NavMain({
+  items,
+}: {
+  items: {
+    title: string;
+    url: string;
+    icon?: LucideIcon;
+    isActive?: boolean;
+    items: { title: string; url: string }[];
+  }[];
+}) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>User Entities</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <Collapsible key={item.title} asChild defaultOpen={item.isActive} className="group/collapsible" >
+          <Collapsible
+            key={item.title}
+            asChild
+            defaultOpen={item.isActive}
+            className="group/collapsible"
+          >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title} >
+                <SidebarMenuButton tooltip={item.title}>
                   {item.icon && <item.icon />}
-                  <span >{item.title}</span>
+                  <span>{item.title}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -31,7 +55,7 @@ export function NavMain({ items }: { items: { title: string, url: string, icon?:
                           <span>{subItem.title}</span>
                         </a>
                       </SidebarMenuSubButton>
-                    </SidebarMenuItem >
+                    </SidebarMenuItem>
                   ))}
                 </SidebarMenuSub>
               </CollapsibleContent>
@@ -40,5 +64,5 @@ export function NavMain({ items }: { items: { title: string, url: string, icon?:
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

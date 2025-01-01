@@ -86,7 +86,7 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = h.queries.UpdateUser(r.Context(), db.UpdateUserParams{
-		ID: int32(id), Username: pgtype.Text{*req.Username, true}, Email: pgtype.Text{*req.Email, true}, Password: pgtype.Text{req.Password, true}, ImageUrl: pgtype.Text{*req.ImageURL, true},
+		ID: int32(id), RoleID: pgtype.Int4{int32(*req.RoleID), true}, Username: pgtype.Text{*req.Username, true}, Email: pgtype.Text{*req.Email, true}, Password: pgtype.Text{req.Password, true}, ImageUrl: pgtype.Text{*req.ImageURL, true},
 	})
 	if err != nil {
 		http.Error(w, "there was an error saving your info: "+err.Error(), http.StatusInternalServerError)

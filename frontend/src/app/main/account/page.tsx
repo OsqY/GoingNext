@@ -1,9 +1,7 @@
-"use client"
+"use client";
 
-import { UserAccountForm } from "@/components/user/user-account-form"
+import { UserAccountForm } from "@/components/user/user-account-form";
 
 export default function Page() {
-  return (
-    <UserAccountForm />
-  )
+  return <UserAccountForm />;
 }

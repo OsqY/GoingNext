@@ -29,8 +29,9 @@ func main() {
 
 	userHandler := handlers.NewUserHandler(queries)
 	authHandler := handlers.NewAuthHandler(queries)
+	roleHandler := handlers.NewRoleHandler(queries)
 
-	router := http_internal.NewRouter(userHandler, authHandler)
+	router := http_internal.NewRouter(userHandler, authHandler, roleHandler)
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 	fmt.Println("We on mf!")

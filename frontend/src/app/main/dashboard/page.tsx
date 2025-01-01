@@ -1,7 +1,9 @@
-"use client"
+"use client";
 
-export default function Page() {
-  return (
-    <div>dashboard</div>
-  )
+import { withAuth } from "@/components/auth/with-auth";
+
+function Dashboard() {
+  return <div>dashboard</div>;
 }
+
+export default withAuth(Dashboard);
