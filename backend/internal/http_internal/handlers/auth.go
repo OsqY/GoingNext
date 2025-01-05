@@ -9,6 +9,7 @@ import (
 
 	"github.com/OsqY/GoingNext/internal/config"
 	"github.com/OsqY/GoingNext/internal/db"
+	"github.com/OsqY/GoingNext/lib/hash"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -86,13 +87,20 @@ func (a *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.Email == userInfo.Email && user.Password == userInfo.Password {
+	valid := hash.VerifyPassword(user.Password, userInfo.Password)
+
+	if !valid {
+		http.Error(w, "invalid credentials", http.StatusUnauthorized)
+		return
+
+	}
+
+	if user.Email == userInfo.Email {
 		tokenString, err := createToken(user.Email)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "invalid credentials")
 			return
-
 		}
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, tokenString)

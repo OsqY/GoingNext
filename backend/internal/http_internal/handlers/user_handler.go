@@ -8,6 +8,7 @@ import (
 
 	"github.com/OsqY/GoingNext/internal/application/dto"
 	"github.com/OsqY/GoingNext/internal/db"
+	"github.com/OsqY/GoingNext/lib/hash"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
@@ -54,8 +55,14 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	hashedPassword, err := hash.HashPassword(req.Password)
+	if err != nil {
+		http.Error(w, "there was an error hashing your password", http.StatusInternalServerError)
+		return
+	}
+
 	user, err := h.queries.CreateUser(r.Context(), db.CreateUserParams{
-		Username: req.Username, Email: req.Email, Password: req.Password, RoleID: int32(req.RoleID), ImageUrl: pgtype.Text{req.ImageURL, true},
+		Username: req.Username, Email: req.Email, Password: hashedPassword, RoleID: int32(req.RoleID), ImageUrl: pgtype.Text{req.ImageURL, true},
 	})
 	if err != nil {
 		http.Error(w, "there was an error saving your info: "+err.Error(), http.StatusInternalServerError)
