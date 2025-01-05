@@ -1,6 +1,8 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+)
 
 type Config struct {
 	Database struct {
@@ -12,6 +14,12 @@ type Config struct {
 	}
 	Auth struct {
 		SecretKey string
+	}
+	Aws struct {
+		S3Bucket        string
+		AwsRegion       string
+		AccessKeyId     string
+		SecretAccessKey string
 	}
 }
 

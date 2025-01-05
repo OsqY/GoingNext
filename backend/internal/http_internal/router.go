@@ -12,9 +12,10 @@ type Router struct {
 	userHandler *handlers.UserHandler
 	authHandler *handlers.AuthHandler
 	roleHandler *handlers.RoleHandler
+	fileHandler *handlers.FileHandler
 }
 
-func NewRouter(userHandler *handlers.UserHandler, authHandler *handlers.AuthHandler, roleHandler *handlers.RoleHandler) *chi.Mux {
+func NewRouter(userHandler *handlers.UserHandler, authHandler *handlers.AuthHandler, roleHandler *handlers.RoleHandler, fileHandler *handlers.FileHandler) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
@@ -44,6 +45,9 @@ func NewRouter(userHandler *handlers.UserHandler, authHandler *handlers.AuthHand
 			})
 			r.Route("/roles", func(r chi.Router) {
 				r.Get("/all", roleHandler.GetRoles)
+			})
+			r.Route("/files", func(r chi.Router) {
+				r.Post("/sends3", fileHandler.SendFileToS3)
 			})
 		})
 	})

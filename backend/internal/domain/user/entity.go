@@ -11,11 +11,12 @@ type User struct {
 	RoleName  string     `json:"role_name"`
 	IsActive  bool       `json:"is_active"`
 	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	UpdatedAt *time.Time `json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	CreatedBy *int64     `json:"created_by,omitempty"`
 	UpdatedBy *int64     `json:"updated_by,omitempty"`
 	DeletedBy *int64     `json:"deleted_by,omitempty"`
+	ImageUrl  string     `json:"imageUrl"`
 }
 
 type Role struct {
@@ -23,7 +24,7 @@ type Role struct {
 	Name        string     `json:"name"`
 	Description string     `json:"description"`
 	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	UpdatedAt   *time.Time `json:"updated_at"`
 	DeletedAt   *time.Time `json:"deleted_at,omitempty"`
 	CreatedBy   *int64     `json:"created_by,omitempty"`
 	UpdatedBy   *int64     `json:"updated_by,omitempty"`

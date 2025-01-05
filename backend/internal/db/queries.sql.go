@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -343,13 +344,13 @@ RETURNING id, email, username, password, role_id, is_active, image_url, created_
 `
 
 type UpdateUserParams struct {
-	ID        int32
-	UpdatedBy pgtype.Int4
-	Email     pgtype.Text
-	Username  pgtype.Text
-	RoleID    pgtype.Int4
-	Password  pgtype.Text
-	ImageUrl  pgtype.Text
+	ID        int64
+	UpdatedBy sql.NullInt64
+	Email     sql.NullString
+	Username  sql.NullString
+	RoleID    sql.NullInt64
+	Password  sql.NullString
+	ImageUrl  sql.NullString
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

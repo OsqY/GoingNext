@@ -30,9 +30,9 @@ func main() {
 	userHandler := handlers.NewUserHandler(queries)
 	authHandler := handlers.NewAuthHandler(queries)
 	roleHandler := handlers.NewRoleHandler(queries)
+	fileHandler := handlers.NewFileHandler(config)
 
-	router := http_internal.NewRouter(userHandler, authHandler, roleHandler)
+	router := http_internal.NewRouter(userHandler, authHandler, roleHandler, fileHandler)
 
 	log.Fatal(http.ListenAndServe(":8000", router))
-	fmt.Println("We on mf!")
 }

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -54,7 +55,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := h.queries.CreateUser(r.Context(), db.CreateUserParams{
-		Username: req.Username, Email: req.Email, Password: req.Password, RoleID: int32(req.RoleID), ImageUrl: pgtype.Text{*req.ImageURL, true},
+		Username: req.Username, Email: req.Email, Password: req.Password, RoleID: int32(req.RoleID), ImageUrl: pgtype.Text{req.ImageURL, true},
 	})
 	if err != nil {
 		http.Error(w, "there was an error saving your info: "+err.Error(), http.StatusInternalServerError)
@@ -86,7 +87,12 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = h.queries.UpdateUser(r.Context(), db.UpdateUserParams{
-		ID: int32(id), RoleID: pgtype.Int4{int32(*req.RoleID), true}, Username: pgtype.Text{*req.Username, true}, Email: pgtype.Text{*req.Email, true}, Password: pgtype.Text{req.Password, true}, ImageUrl: pgtype.Text{*req.ImageURL, true},
+		ID:       int64(id),
+		RoleID:   sql.NullInt64{Int64: int64(req.RoleID), Valid: true},
+		Username: sql.NullString{String: req.Username, Valid: req.Username != ""},
+		Email:    sql.NullString{String: req.Email, Valid: req.Email != ""},
+		Password: sql.NullString{String: req.Password, Valid: req.Password != ""},
+		ImageUrl: sql.NullString{String: req.ImageURL, Valid: req.ImageURL != ""},
 	})
 	if err != nil {
 		http.Error(w, "there was an error saving your info: "+err.Error(), http.StatusInternalServerError)
